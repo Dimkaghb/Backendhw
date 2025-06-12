@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8000/todos', {
+          const response = await axios.get('http://164.92.184.138:8000/todos', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

@@ -60,7 +60,7 @@ const TodoList = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/todos', {
+      const response = await axios.get('http://164.92.184.138:8000/todos', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -89,7 +89,7 @@ const TodoList = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:8000/todos',
+        'http://164.92.184.138:8000/todos',
         {
           name: newTodo,
           is_completed: false
@@ -114,7 +114,7 @@ const TodoList = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:8000/todos/${todo.id}`,
+        `http://164.92.184.138:8000/todos/${todo.id}`,
         {
           ...todo,
           is_completed: !todo.is_completed
@@ -137,7 +137,7 @@ const TodoList = () => {
   const deleteTodo = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8000/todos/${id}`, {
+      await axios.delete(`http://164.92.184.138:8000/todos/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

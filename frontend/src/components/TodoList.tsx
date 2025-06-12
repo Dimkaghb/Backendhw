@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { Todo } from '../types/todo';
 import TodoItem from './Todo';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://164.92.184.138:8000';
 
 const TodoList: React.FC = () => {
     const [todos, setTodos] = useState<Todo[]>([]);

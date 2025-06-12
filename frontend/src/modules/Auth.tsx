@@ -14,7 +14,7 @@ const Auth = () => {
     setError('');
 
     try {
-      const endpoint = isLogin ? 'http://localhost:8000/login' : 'http://localhost:8000/signup';
+      const endpoint = isLogin ? 'http://164.92.184.138:8000/login' : 'http://164.92.184.138:8000/signup';
       const response = await axios.post(endpoint, { username, password }, {
         headers: {
           'Content-Type': 'application/json',
