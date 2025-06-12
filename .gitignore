@@ -1,4 +1,7 @@
 # Environment variables
+.env
+venv/
+
 
 # Python
 __pycache__/
@@ -53,6 +56,3 @@ backend/app.log
 # Node modules (if any)
 node_modules/ 
 
-
-backend/.env
-venv/
