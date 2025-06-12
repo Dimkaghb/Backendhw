@@ -10,6 +10,8 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 async def get_todos(current_user: str = Depends(get_authenticated_user)):
     return await todo_service.get_todos()
 
+
+
 @router.get("/{todo_id}", response_model=ToDo)
 async def get_todo(todo_id: int, current_user: str = Depends(get_authenticated_user)):
     return await todo_service.get_todo(todo_id)
