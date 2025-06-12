@@ -119,7 +119,7 @@ def create_redis_todo_task():
 # Configure periodic tasks
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(10.0, create_redis_todo_task.s(), name='create-redis-todo-every-10-seconds')
+    sender.add_periodic_task(3600.0, create_redis_todo_task.s(), name='create-redis-todo-every-10-seconds')
 
 if __name__ == '__main__':
     celery_app.start() 
