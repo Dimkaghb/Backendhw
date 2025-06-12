@@ -4,15 +4,28 @@ from ..models.task import Task, TaskCreate
 from ..services.task_service import task_service
 from ..core.dependencies import get_authenticated_user
 
-router = APIRouter(prefix="/tasks", tags=["tasks"])
+router = APIRouter(tags=["tasks"])
 
-@router.post("/", response_model=Task)
+# Maintain backward compatibility with original endpoints
+@router.post("/create_task", response_model=Task)
 async def create_task(
     task: TaskCreate,
     current_user: str = Depends(get_authenticated_user)
 ):
     return await task_service.create_task(task, current_user)
 
-@router.get("/", response_model=List[Task])
+@router.get("/get_tasks", response_model=List[Task])
 async def get_tasks(current_user: str = Depends(get_authenticated_user)):
     return await task_service.get_tasks(current_user)
+
+# New RESTful endpoints
+@router.post("/tasks", response_model=Task)
+async def create_task_rest(
+    task: TaskCreate,
+    current_user: str = Depends(get_authenticated_user)
+):
+    return await task_service.create_task(task, current_user)
+
+@router.get("/tasks", response_model=List[Task])
+async def get_tasks_rest(current_user: str = Depends(get_authenticated_user)):
+    return await task_service.get_tasks(current_user) 

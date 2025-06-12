@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import config from '../../config';
 
 interface Message {
   id: string;
@@ -55,7 +56,7 @@ const Chatbot: React.FC = () => {
       const token = localStorage.getItem('access_token');
       if (!token) return;
 
-        const response = await fetch('http://164.92.184.138:8000/chat/history', {
+        const response = await fetch(`${config.apiBaseUrl}/chat/history`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ const Chatbot: React.FC = () => {
         return 'Please log in to use the chatbot.';
       }
 
-      const response = await fetch('http://164.92.184.138:8000/chat', {
+      const response = await fetch(`${config.apiBaseUrl}/chat`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -161,7 +162,7 @@ const Chatbot: React.FC = () => {
     if (file) {
       console.log('File selected:', file.name);
     }
-    axios.post('http://164.92.184.138:8000/chat/upload', {
+    axios.post(`${config.apiBaseUrl}/chat/upload`, {
       file: file
     });
   };
@@ -177,7 +178,7 @@ const Chatbot: React.FC = () => {
     try {
       const token = localStorage.getItem('access_token');
       if (token) {
-        await fetch('http://164.92.184.138:8000/chat/clear', {
+        await fetch(`${config.apiBaseUrl}/chat/clear`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

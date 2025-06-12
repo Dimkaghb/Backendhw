@@ -13,4 +13,6 @@ langchain-community
 llama-index
 llama-index-llms-openai
 llama-index-embeddings-openai
-openai 
+openai
+celery==5.3.4
+redis==5.0.1 

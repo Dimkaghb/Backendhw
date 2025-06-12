@@ -45,25 +45,84 @@ services:
       - todo-network
     restart: unless-stopped
 
-  # MongoDB Express (Web UI for MongoDB)
-  mongo-express:
-    image: mongo-express:latest
-    container_name: mongo-express-todo
+  # MongoDB Express (Web UI for MongoDB) - Temporarily disabled
+  # mongo-express:
+  #   image: mongo-express:latest
+  #   container_name: mongo-express-todo
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - ME_CONFIG_MONGODB_SERVER=mongodb
+  #     - ME_CONFIG_MONGODB_PORT=27017
+  #     - ME_CONFIG_BASICAUTH_USERNAME=admin
+  #     - ME_CONFIG_BASICAUTH_PASSWORD=admin123
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - todo-network
+  #   restart: unless-stopped
+
+  # Redis (Message Broker for Celery)
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-todo
     ports:
-      - "8081:8081"
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - todo-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Celery Worker
+  celery-worker:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: celery-worker-todo
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
+      - MONGO_DB_URL=mongodb://mongodb:27017/todo
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    volumes:
+      - celery_data:/app/data
     depends_on:
+      - redis
       - mongodb
     networks:
       - todo-network
     restart: unless-stopped
+    command: celery -A celery_app worker --loglevel=info
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: celery-beat-todo
+    environment:
+      - MONGO_DB_URL=mongodb://mongodb:27017/todo
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30
+    volumes:
+      - celery_data:/app/data
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - todo-network
+    restart: unless-stopped
+    command: celery -A celery_app beat --loglevel=info
 
 volumes:
   mongodb_data:
+  redis_data:
+  celery_data:
 
 networks:
   todo-network:

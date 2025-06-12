@@ -3,9 +3,16 @@ from datetime import datetime, timezone
 from typing import List
 from ..models.chat import ChatMessage, ChatResponse
 from ..config.settings import settings
-from backend.interaction import A2AInteraction
 import os
+import sys
 import logging
+
+# Add the backend directory to the path to import interaction module
+backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
+from interaction import A2AInteraction
 
 logger = logging.getLogger(__name__)
 

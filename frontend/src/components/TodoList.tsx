@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { Todo } from '../types/todo';
 import TodoItem from './Todo';
+import config from '../../config';
 
-const API_URL = 'http://164.92.184.138:8000';
+const API_URL = config.apiBaseUrl;
 
 const TodoList: React.FC = () => {
     const [todos, setTodos] = useState<Todo[]>([]);

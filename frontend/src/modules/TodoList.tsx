@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-interface Todo {
-  id: number;
-  name: string;
-  is_completed: boolean;
-}
+import config from '../../config';
+import type { Todo } from '../types/todo';
 
 const TodoList = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [error, setError] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -22,7 +19,7 @@ const TodoList = () => {
         return;
       }
 
-      await axios.post('http://localhost:8000/logout', null, {
+      await axios.post(`${config.apiBaseUrl}/logout`, null, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -52,21 +49,26 @@ const TodoList = () => {
     navigate('/chatbot');
   };
 
-  const fetchTodos = async () => {
+  const fetchTodos = async (showRefreshIndicator = false) => {
     try {
+      if (showRefreshIndicator) {
+        setIsRefreshing(true);
+      }
+      
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/auth');
         return;
       }
 
-      const response = await axios.get('http://164.92.184.138:8000/todos', {
+      const response = await axios.get(`${config.apiBaseUrl}/todos`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
       setTodos(response.data);
+      setError(''); // Clear any previous errors
     } catch (err: any) {
       if (err.response && err.response.status === 401) {
         // Token is invalid or expired
@@ -75,11 +77,22 @@ const TodoList = () => {
         return;
       }
       setError('Failed to load todos');
+    } finally {
+      if (showRefreshIndicator) {
+        setIsRefreshing(false);
+      }
     }
   };
 
   useEffect(() => {
     fetchTodos();
+    
+    // Auto-refresh todos every 5 seconds to see new Redis todos
+    const interval = setInterval(() => {
+      fetchTodos(true);
+    }, 5000);
+    
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const handleAddTodo = async (e: React.FormEvent) => {
@@ -89,7 +102,7 @@ const TodoList = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://164.92.184.138:8000/todos',
+        `${config.apiBaseUrl}/todos`,
         {
           name: newTodo,
           is_completed: false
@@ -114,7 +127,7 @@ const TodoList = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://164.92.184.138:8000/todos/${todo.id}`,
+        `${config.apiBaseUrl}/todos/${todo.id}`,
         {
           ...todo,
           is_completed: !todo.is_completed
@@ -137,7 +150,7 @@ const TodoList = () => {
   const deleteTodo = async (id: number) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://164.92.184.138:8000/todos/${id}`, {
+      await axios.delete(`${config.apiBaseUrl}/todos/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -152,7 +165,19 @@ const TodoList = () => {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h1>Todo List</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h1>Todo List</h1>
+          {isRefreshing && (
+            <span style={{ 
+              fontSize: '12px', 
+              color: '#28a745', 
+              fontWeight: 'bold',
+              animation: 'pulse 1s infinite'
+            }}>
+              🔄 Auto-refreshing...
+            </span>
+          )}
+        </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={handleChatbotNavigation}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import config from '../../config';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,7 +15,7 @@ const Auth = () => {
     setError('');
 
     try {
-      const endpoint = isLogin ? 'http://164.92.184.138:8000/login' : 'http://164.92.184.138:8000/signup';
+      const endpoint = isLogin ? `${config.apiBaseUrl}/login` : `${config.apiBaseUrl}/signup`;
       const response = await axios.post(endpoint, { username, password }, {
         headers: {
           'Content-Type': 'application/json',

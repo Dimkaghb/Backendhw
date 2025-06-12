@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import config from '../../config';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -21,7 +22,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       }
 
       try {
-          const response = await axios.get('http://164.92.184.138:8000/todos', {
+          const response = await axios.get(`${config.apiBaseUrl}/todos`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
