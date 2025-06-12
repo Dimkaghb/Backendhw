@@ -4,7 +4,7 @@ from ..models.user import User
 from ..services.auth_service import auth_service
 from ..core.security import security
 
-router = APIRouter(prefix="/auth", tags=["authentication"])
+router = APIRouter(tags=["authentication"])
 
 @router.post("/signup")
 async def signup(user: User):
@@ -12,7 +12,7 @@ async def signup(user: User):
 
 @router.post("/login")
 async def login(user: User):
-    return await auth_service.login(user)
+    return await auth_service.login(user)   
 
 @router.post("/logout")
 async def logout(credentials: HTTPAuthorizationCredentials = Depends(security)):
