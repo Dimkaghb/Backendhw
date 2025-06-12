@@ -91,9 +91,9 @@ async def create_todo_in_db(todo_name: str):
             "created_by": "celery_auto_task"
         }
         
-        # Insert into tasks collection (using tasks as it seems to be the main collection)
-        tasks_collection = db.tasks
-        result = await tasks_collection.insert_one(todo_doc)
+        # Insert into todos collection
+        todos_collection = db.todos
+        result = await todos_collection.insert_one(todo_doc)
         
         logger.info(f"Created todo task: '{todo_name}' with ID: {result.inserted_id}")
         
@@ -185,19 +185,19 @@ def get_todo_stats():
                 client, db = await get_database_connection()
                 await client.admin.command('ping')
                 
-                tasks_collection = db.tasks
+                todos_collection = db.todos
                 
                 # Get total count
-                total_todos = await tasks_collection.count_documents({})
+                total_todos = await todos_collection.count_documents({})
                 
                 # Get completed count
-                completed_todos = await tasks_collection.count_documents({"is_completed": True})
+                completed_todos = await todos_collection.count_documents({"is_completed": True})
                 
                 # Get pending count
                 pending_todos = total_todos - completed_todos
                 
                 # Get todos created by celery
-                celery_todos = await tasks_collection.count_documents({"created_by": "celery_auto_task"})
+                celery_todos = await todos_collection.count_documents({"created_by": "celery_auto_task"})
                 
                 return {
                     "total_todos": total_todos,

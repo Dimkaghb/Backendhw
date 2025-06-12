@@ -11,15 +11,12 @@ logger = logging.getLogger(__name__)
 class TodoService:
     def __init__(self):
         self.db = get_database()
-        # Fallback in-memory storage
-        self.todos = []
-        self.current_id = 1
 
     async def get_todos(self) -> List[ToDo]:
         if self.db.mongodb_connected:
             # Use MongoDB
             todos = []
-            async for todo in self.db.db.todos.find():
+            async for todo in self.db.todos_collection.find():
                 todo_dict = {
                     "id": str(todo["_id"]),
                     "name": todo["name"],
@@ -29,13 +26,13 @@ class TodoService:
             return todos
         else:
             # Use in-memory storage
-            return self.todos
+            return self.db.in_memory_todos
 
     async def get_todo(self, todo_id: int) -> ToDo:
         if self.db.mongodb_connected:
             # Use MongoDB
             try:
-                todo = await self.db.db.todos.find_one({"_id": ObjectId(str(todo_id))})
+                todo = await self.db.todos_collection.find_one({"_id": ObjectId(str(todo_id))})
                 if not todo:
                     raise HTTPException(status_code=404, detail="Todo not found")
                 
@@ -48,7 +45,7 @@ class TodoService:
                 raise HTTPException(status_code=404, detail="Todo not found")
         else:
             # Use in-memory storage
-            for todo in self.todos:
+            for todo in self.db.in_memory_todos:
                 if todo.id == todo_id:
                     return todo
             raise HTTPException(status_code=404, detail="Todo not found")
@@ -63,14 +60,14 @@ class TodoService:
                 "updated_at": datetime.now(timezone.utc)
             }
             
-            result = await self.db.db.todos.insert_one(todo_dict)
+            result = await self.db.todos_collection.insert_one(todo_dict)
             todo.id = str(result.inserted_id)
             return todo
         else:
             # Use in-memory storage
-            todo.id = self.current_id
-            self.current_id += 1
-            self.todos.append(todo)
+            todo.id = self.db.todo_counter
+            self.db.todo_counter += 1
+            self.db.in_memory_todos.append(todo)
             return todo
 
     async def update_todo(self, todo_id: int, updated_todo: ToDo) -> ToDo:
@@ -83,7 +80,7 @@ class TodoService:
                     "updated_at": datetime.now(timezone.utc)
                 }
                 
-                result = await self.db.db.todos.update_one(
+                result = await self.db.todos_collection.update_one(
                     {"_id": ObjectId(str(todo_id))},
                     {"$set": update_data}
                 )
@@ -97,10 +94,10 @@ class TodoService:
                 raise HTTPException(status_code=404, detail="Todo not found")
         else:
             # Use in-memory storage
-            for i, todo in enumerate(self.todos):
+            for i, todo in enumerate(self.db.in_memory_todos):
                 if todo.id == todo_id:
                     updated_todo.id = todo_id
-                    self.todos[i] = updated_todo
+                    self.db.in_memory_todos[i] = updated_todo
                     return updated_todo
             raise HTTPException(status_code=404, detail="Todo not found")
 
@@ -108,11 +105,11 @@ class TodoService:
         if self.db.mongodb_connected:
             # Use MongoDB
             try:
-                todo = await self.db.db.todos.find_one({"_id": ObjectId(str(todo_id))})
+                todo = await self.db.todos_collection.find_one({"_id": ObjectId(str(todo_id))})
                 if not todo:
                     raise HTTPException(status_code=404, detail="Todo not found")
                 
-                await self.db.db.todos.delete_one({"_id": ObjectId(str(todo_id))})
+                await self.db.todos_collection.delete_one({"_id": ObjectId(str(todo_id))})
                 
                 return ToDo(
                     id=str(todo["_id"]),
@@ -123,9 +120,9 @@ class TodoService:
                 raise HTTPException(status_code=404, detail="Todo not found")
         else:
             # Use in-memory storage
-            for i, todo in enumerate(self.todos):
+            for i, todo in enumerate(self.db.in_memory_todos):
                 if todo.id == todo_id:
-                    return self.todos.pop(i)
+                    return self.db.in_memory_todos.pop(i)
             raise HTTPException(status_code=404, detail="Todo not found")
 
 todo_service = TodoService()

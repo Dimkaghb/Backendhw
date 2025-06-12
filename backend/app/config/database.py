@@ -9,12 +9,15 @@ class Database:
     db = None
     users_collection = None
     tasks_collection = None
+    todos_collection = None
     mongodb_connected = False
     
     # In-memory storage for development when MongoDB is not available
     in_memory_users = {}
     in_memory_tasks = {}
+    in_memory_todos = []
     task_counter = 1
+    todo_counter = 1
 
 database = Database()
 
@@ -28,6 +31,7 @@ async def connect_to_mongo():
         database.db = database.client.todo
         database.users_collection = database.db.users
         database.tasks_collection = database.db.tasks
+        database.todos_collection = database.db.todos
         
         # Test the connection
         await database.client.admin.command('ping')
