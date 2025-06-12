@@ -1,54 +1,89 @@
-# React + TypeScript + Vite
+# React Todo App with AI Chatbot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application with todo management and AI-powered chatbot integration.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🔐 Authentication
+- User registration and login
+- JWT token-based authentication
+- Protected routes
 
-## Expanding the ESLint configuration
+### ✅ Todo Management
+- Create, read, update, and delete todos
+- Mark todos as completed
+- Real-time updates
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🤖 AI Chatbot Integration
+- **NEW**: AI-powered chatbot accessible from the todos page
+- Powered by LangChain and LlamaIndex
+- Document search and question answering
+- Chat history persistence
+- Seamless navigation between todos and chatbot
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## How to Use the Chatbot
+
+1. **Login** to your account
+2. Navigate to the **Todos** page
+3. Click the **🤖 Chat Assistant** button in the top-right corner
+4. Start chatting with the AI assistant
+5. Use the **back arrow** to return to your todos
+
+## Navigation Flow
+
+```
+Login → Todos ↔ Chatbot
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Todos Page**: Manage your tasks + access chatbot
+- **Chatbot Page**: AI assistant + return to todos
+- **Authentication**: Required for both features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Technical Features
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Frontend
+- React 18 with TypeScript
+- React Router for navigation
+- Tailwind CSS for styling
+- Axios for API calls
+- Protected routes with authentication
+
+### Backend Integration
+- FastAPI backend with JWT authentication
+- LangChain + LlamaIndex AI agents
+- Document search capabilities
+- Chat history management
+- MongoDB/in-memory storage
+
+## Getting Started
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Start the development server**:
+   ```bash
+   npm start
+   ```
+
+3. **Ensure backend is running**:
+   - Backend should be running on `http://localhost:8000`
+   - Frontend will be on `http://localhost:3000`
+
+## User Experience
+
+- **Seamless Integration**: Switch between todos and chatbot without losing authentication
+- **Persistent Sessions**: Stay logged in across both features
+- **Modern UI**: Clean, responsive design with smooth transitions
+- **Real-time Chat**: Instant responses from AI assistant
+
+## Authentication Flow
+
+The app maintains authentication state across both todos and chatbot:
+- Login stores JWT token in localStorage
+- Both `token` and `access_token` formats supported for compatibility
+- Protected routes ensure secure access
+- Logout clears all tokens and redirects to login
+
+Enjoy managing your todos and chatting with your AI assistant! 🚀

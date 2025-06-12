@@ -3,6 +3,7 @@ import Auth from './modules/Auth';
 import ProtectedRoute from './modules/ProtectedRoute';
 import TodoList from './modules/TodoList'; // You'll need to create this component
 import './App.css'
+import Chatbot from './modules/Chatbot';
 
 const App = () => {
   return (
@@ -16,6 +17,14 @@ const App = () => {
               <TodoList />
             </ProtectedRoute>
           }
+        />
+        <Route 
+          path="/chatbot" 
+          element={
+            <ProtectedRoute>
+              <Chatbot />
+            </ProtectedRoute>
+          } 
         />
         <Route path="/" element={<Navigate to="/auth" replace />} />
       </Routes>

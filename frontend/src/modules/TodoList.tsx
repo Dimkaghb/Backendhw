@@ -30,14 +30,26 @@ const TodoList = () => {
 
       // Clear the token from localStorage
       localStorage.removeItem('token');
+      // Also clear access_token for chatbot compatibility
+      localStorage.removeItem('access_token');
       // Redirect to login page
       navigate('/auth');
     } catch (err) {
       console.error('Logout failed:', err);
       // Even if the server request fails, clear the token and redirect
       localStorage.removeItem('token');
+      localStorage.removeItem('access_token');
       navigate('/auth');
     }
+  };
+
+  const handleChatbotNavigation = () => {
+    // Ensure both token formats are available for compatibility
+    const token = localStorage.getItem('token');
+    if (token) {
+      localStorage.setItem('access_token', token);
+    }
+    navigate('/chatbot');
   };
 
   const fetchTodos = async () => {
@@ -141,19 +153,37 @@ const TodoList = () => {
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h1>Todo List</h1>
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#dc3545',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleChatbotNavigation}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            🤖 Chat Assistant
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       

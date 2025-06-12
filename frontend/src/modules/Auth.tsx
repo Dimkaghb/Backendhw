@@ -24,8 +24,9 @@ const Auth = () => {
       const data = response.data;
 
       if (isLogin) {
-        // Store the JWT token in localStorage
+        // Store the JWT token in localStorage in both formats for compatibility
         localStorage.setItem('token', data.access_token);
+        localStorage.setItem('access_token', data.access_token);
         // Navigate to the todos page after successful login
         navigate('/todos');
       } else {
